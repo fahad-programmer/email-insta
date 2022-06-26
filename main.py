@@ -10,11 +10,17 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.common.exceptions import TimeoutException
 
+error_type = ''
+
 
 def driver_setup():
     username_file = open('usernames.txt', 'r', encoding="utf8")
     usernames = username_file.readlines()
     username_file.close()
+
+    # proxy_list = open("proxy_list.txt", 'r')
+    # proxies = proxy_list.readlines()
+    # proxy = random.choices(proxies)
 
     number = 0
 
@@ -22,6 +28,8 @@ def driver_setup():
 
         ser = Service("chromedriver.exe")
         op = webdriver.ChromeOptions()
+        # op.add_extension("touch.crx")
+        # op.add_extension("cor.crx")
         op.add_argument('--ignore-ssl-errors=yes')
         op.add_argument('--ignore-certificate-errors')
         driver = webdriver.Chrome(service=ser, options=op)
@@ -36,7 +44,7 @@ def driver_setup():
                 EC.presence_of_element_located((By.NAME, "password"))
             )
 
-            element_login_button = WebDriverWait(driver, 13).until(
+            element_login_button = WebDriverWait(driver, 25).until(
                 EC.presence_of_element_located((By.XPATH, "/html/body/div[1]/section/main/article/div[2]/div[1]/div["
                                                           "2]/form/div/div[3]/button"))
             )
@@ -49,20 +57,41 @@ def driver_setup():
         try:
             element_username.send_keys(username.split(':')[0])
             element_password.send_keys(username.split(':')[1])
-            time.sleep(2)
+            time.sleep(1)
             element_login_button.click()
 
         except Exception as E:
             print("Error: ")
 
+        time.sleep(7)
 
-        finally:
-            time.sleep(5)
+        try:
+            alert = WebDriverWait(driver, 3).until(
+                EC.presence_of_element_located(By.XPATH, "//*[@id='slfErrorAlert']")
+            )
+            if "incorrect" in alert.text:
+                wrong_pas = open("wrong_password.txt", "a")
+                wrong_pas.write(username)
+                wrong_pas.close()
+                continue
 
+            elif "username" in alert.text:
+                wrong_user = open("wrong_username.txt", "a")
+                wrong_user.write(username)
+                wrong_user.close()
+                continue
+
+            else:
+                unchange_username = open('unchanged_usernames.txt', 'a')
+                unchange_username.write(f"{username}")
+                unchange_username.close()
+                continue
+
+        except Exception as e:
             driver.get(f"https://instagram.com/{username.split(':')[0]}")
 
         try:
-            profile_pic_element = WebDriverWait(driver, 13).until(
+            profile_pic_element = WebDriverWait(driver, 15).until(
                 EC.presence_of_element_located((By.CLASS_NAME, "_aadn"))
             )
             profile_pic_element.click()
@@ -75,9 +104,9 @@ def driver_setup():
 
         time.sleep(2)
 
-        random_pick = random.choice([x for x in os.listdir("E:\Personal WorkSpace\InstaAut\Images\\") if
-                                     os.path.isfile(os.path.join("E:\Personal WorkSpace\InstaAut\Images\\", x))])
-        pyautogui.write(f"E:\Personal WorkSpace\InstaAut\\Images\\{random_pick}")
+        random_pick = random.choice([x for x in os.listdir("E:\\Personal WorkSpace\\InstaAut\\Images\\") if
+                                     os.path.isfile(os.path.join("E:\\Personal WorkSpace\\InstaAut\\Images\\", x))])
+        pyautogui.write(f"E:\\Personal WorkSpace\\InstaAut\\Images\\{random_pick}")
         pyautogui.press("enter")
         time.sleep(2)
 
@@ -144,7 +173,7 @@ def driver_setup():
 
         second_password_element = WebDriverWait(driver, 7).until(
             EC.presence_of_element_located((By.XPATH, "//*[@id='rcmloginpwd']"))
-            )
+        )
 
         second_username_element.send_keys(username.split(":")[2])
         second_password_element.send_keys(username.split(":")[3])
@@ -163,21 +192,27 @@ def driver_setup():
             driver.refresh()
             try:
                 confirm_message = WebDriverWait(driver, 5).until(
-                    EC.presence_of_element_located((By.XPATH, "/html/body/div[1]/div[3]/div[4]/table[2]/tbody/tr/td[3]"))
+                    EC.presence_of_element_located(
+                        (By.XPATH, "/html/body/div[1]/div[3]/div[4]/table[2]/tbody/tr/td[3]"))
                 )
             except TimeoutException as f:
                 continue
 
         # create action chain object
         action = ActionChains(driver)
-        # double click the item
+        # double-click the item
         action.double_click(on_element=confirm_message)
 
         # perform the operation
         action.perform()
 
-        last_confirm_btn =  WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located((By.XPATH, "/html/body/div[1]/div[2]/div[2]/div[2]/div[2]/div[2]/div/div/table/tbody/tr/td/table/tbody/tr[4]/td/table/tbody/tr/td/table/tbody/tr[2]/td/table/tbody/tr/td/table/tbody/tr/td[2]/table/tbody/tr[3]/td/a/table/tbody/tr/td"))
+        last_confirm_btn = WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.XPATH,
+                                            "/html/body/div[1]/div[2]/div[2]/div[2]/div[2]/div["
+                                            "2]/div/div/table/tbody/tr/td/table/tbody/tr["
+                                            "4]/td/table/tbody/tr/td/table/tbody/tr["
+                                            "2]/td/table/tbody/tr/td/table/tbody/tr/td[2]/table/tbody/tr["
+                                            "3]/td/a/table/tbody/tr/td"))
         )
         last_confirm_btn.click()
         time.sleep(5)
