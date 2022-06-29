@@ -131,7 +131,9 @@ def driver_setup():
             # bio_field.send_keys(random.choice(bio_list))
 
             # Changing Email
-            change_email = driver.find_element(By.XPATH, '//*[@id="pepEmail"]')
+            change_email = WebDriverWait(driver, 10).until(
+                EC.presence_of_element_located((By.XPATH, '//*[@id="pepEmail"]'))
+            )
             changed_mail = username.split(":")[2]
             time.sleep(1)
             change_email.clear()
