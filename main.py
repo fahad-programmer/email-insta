@@ -108,7 +108,7 @@ def driver_setup():
                                      os.path.isfile(os.path.join("E:\\Personal WorkSpace\\InstaAut\\Images\\", x))])
         pyautogui.write(f"E:\\Personal WorkSpace\\InstaAut\\Images\\{random_pick}")
         pyautogui.press("enter")
-        time.sleep(2)
+        time.sleep(5)
 
         try:
             driver.get("https://instagram.com/accounts/edit")
@@ -149,7 +149,9 @@ def driver_setup():
         time.sleep(2)
 
         try:
-            submit_btn = driver.find_elements(By.CLASS_NAME, "sqdOP")[3]
+            submit_btn = WebDriverWait(driver, 10).until(
+                EC.element_to_be_clickable(By.XPATH, "/html/body/div[1]/div/div[1]/div/div[1]/div/div/div[1]/div[1]/section/main/div/article/form/div[10]/div/div/button")
+            )
             submit_btn.click()
         except Exception as E:
             print(E)
