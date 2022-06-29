@@ -152,8 +152,8 @@ def driver_setup():
 
         try:
             submit_btn = WebDriverWait(driver, 10).until(
-                EC.element_to_be_clickable(By.XPATH, "/html/body/div[1]/div/div[1]/div/div[1]/div/div/div[1]/div[1]/section/main/div/article/form/div[10]/div/div/button")
-            )
+                EC.element_to_be_clickable((By.XPATH, "/html/body/div[1]/div/div[1]/div/div[1]/div/div/div[1]/div[1]/section/main/div/article/form/div[10]/div/div/button")
+            ))
             submit_btn.click()
         except Exception as E:
             print(E)
