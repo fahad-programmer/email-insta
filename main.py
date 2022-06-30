@@ -34,19 +34,21 @@ def driver_setup():
         op.add_argument('--ignore-certificate-errors')
         driver = webdriver.Chrome(service=ser, options=op)
 
-        driver.get("https://www.instagram.com")
+        driver.get("https://www.instagram.com/accounts/login/")
 
         try:
             element_username = WebDriverWait(driver, 25).until(
-                EC.presence_of_element_located((By.NAME, "username"))
+                EC.presence_of_element_located((By.XPATH, "/html/body/div[1]/section/main/div/div/div[1]/div["
+                                                          "2]/form/div/div[1]/div/label/input"))
             )
             element_password = WebDriverWait(driver, 25).until(
-                EC.presence_of_element_located((By.NAME, "password"))
+                EC.presence_of_element_located((By.XPATH, "/html/body/div[1]/section/main/div/div/div[1]/div["
+                                                          "2]/form/div/div[2]/div/label/input")) 
             )
 
             element_login_button = WebDriverWait(driver, 25).until(
-                EC.presence_of_element_located((By.XPATH, "/html/body/div[1]/section/main/article/div[2]/div[1]/div["
-                                                          "2]/form/div/div[3]/button"))
+                EC.presence_of_element_located((By.XPATH, "/html/body/div[1]/section/main/div/div/div[1]/div["
+                                                          "2]/form/div/div[3]/button")) 
             )
         except Exception as E:
             unchange_username = open('unchanged_usernames.txt', 'a')
